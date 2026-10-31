@@ -2,7 +2,7 @@
 
 A high-performance single-page developer portfolio showcasing full-stack Java, Spring Boot, and React engineering projects.
 
-**Live site:** [https://YOUR-SITE-URL/](https://YOUR-SITE-URL/)
+**Live site:** [https://portfolio-chi-gules-7jsgenmgru.vercel.app/](https://portfolio-chi-gules-7jsgenmgru.vercel.app/)
 
 ## Tech Stack
 - **Core:** React 19, Vite
