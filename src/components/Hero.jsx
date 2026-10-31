@@ -79,11 +79,14 @@ export default function Hero() {
           isPlaying ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         playsInline
+        muted
+        loop
         poster={heroPhoto}
         onEnded={() => setIsPlaying(false)}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
+
 
       {/* Hero Photo Image (Shown when video reel is paused or idle) */}
       <img
