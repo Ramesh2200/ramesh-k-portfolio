@@ -2,8 +2,8 @@ import { useRef, useEffect, useState } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import heroVideo from '../assets/hero/hero.mp4'
-import heroPoster from '../assets/about/profile.png'
-import { heroContent, socialLinks } from '../data/portfolioData'
+import heroPhoto from '../assets/hero/hero-photo.png'
+import { heroContent, socialLinks, personalInfo } from '../data/portfolioData'
 
 export default function Hero() {
   const videoRef = useRef(null)
@@ -72,16 +72,28 @@ export default function Hero() {
 
   return (
     <section id="home" className="relative w-full h-screen overflow-hidden bg-[#ff2a2a]">
-      {/* Background Video */}
+      {/* Background Video Reel */}
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-contain object-top md:object-right z-0"
+        className={`absolute inset-0 w-full h-full object-contain object-top md:object-right z-0 transition-opacity duration-500 ${
+          isPlaying ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         playsInline
-        poster={heroPoster}
+        poster={heroPhoto}
         onEnded={() => setIsPlaying(false)}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
+
+      {/* Hero Photo Image (Shown when video reel is paused or idle) */}
+      <img
+        src={heroPhoto}
+        alt={`${personalInfo?.name || 'RAMESH K'} - Developer Portrait`}
+        className={`absolute inset-0 w-full h-full object-contain object-top md:object-right z-0 transition-opacity duration-500 ${
+          isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      />
+
 
       {/* Readability Overlay */}
       <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
