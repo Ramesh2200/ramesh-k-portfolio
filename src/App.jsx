@@ -4,6 +4,7 @@ import About from './components/About'
 import TechnicalSkills from './components/TechnicalSkills'
 import Projects from './components/Projects'
 import Leadership from './components/Leadership'
+import SoftSkills from './components/SoftSkills'
 import Footer from './components/Footer'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <TechnicalSkills />
       <Projects />
       <Leadership />
+      <SoftSkills />
       <Footer />
     </>
   )
