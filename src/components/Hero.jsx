@@ -116,12 +116,6 @@ export default function Hero() {
       {/* Readability Overlay */}
       <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
 
-      {/* Left Floating Social Bar (Desktop) */}
-      <div className="hidden xl:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col space-y-4">
-        {renderSocialIcon('GitHub', socialLinks.github, githubIcon)}
-        {renderSocialIcon('LinkedIn', socialLinks.linkedin, linkedinIcon)}
-        {renderSocialIcon('Instagram', socialLinks.instagram, instagramIcon)}
-      </div>
 
       {/* Content Container */}
       <div className="absolute inset-0 z-20 max-w-7xl mx-auto px-6 md:px-12 pb-20 md:pb-[8%] flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end">
