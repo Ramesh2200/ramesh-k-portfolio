@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { projects, socialLinks } from '../data/portfolioData'
+import projectDemoBg from '../assets/projects/project-demo-bg.jpg'
 
 function GitHubIcon() {
   return (
@@ -32,7 +33,7 @@ function ExternalLinkIcon() {
 
 function PlayIcon() {
   return (
-    <svg className="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24" aria-hidden="true">
       <polygon points="5 3 19 12 5 21 5 3" />
     </svg>
   )
@@ -84,13 +85,32 @@ function ProjectVideoPlayer({ project }) {
       </div>
 
       {/* Video Viewport */}
-      <div className="relative aspect-video w-full bg-gradient-to-br from-black via-zinc-950 to-neutral-900 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+        {/* Background Showcase Image */}
+        <img
+          src={projectDemoBg}
+          alt={`${project.title} Demo Preview`}
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
+            isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-65 group-hover/video:opacity-85 group-hover/video:scale-105'
+          }`}
+        />
+
+        {/* Cinematic Gradient Overlay */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/60 pointer-events-none transition-opacity duration-500 ${
+            isPlaying ? 'opacity-0' : 'opacity-100'
+          }`}
+        />
+
         {project.videoUrl && !hasError ? (
           <>
             <video
               ref={videoRef}
               src={project.videoUrl}
-              className="w-full h-full object-cover"
+              poster={projectDemoBg}
+              className={`w-full h-full object-cover relative z-10 transition-opacity duration-300 ${
+                isPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
               playsInline
               controls={isPlaying}
               onError={() => setHasError(true)}
@@ -103,25 +123,28 @@ function ProjectVideoPlayer({ project }) {
             {!isPlaying && (
               <div
                 onClick={handleTogglePlay}
-                className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer group-hover/video:bg-black/40 transition-all duration-300"
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer group-hover/video:bg-black/30 transition-all duration-300"
               >
                 <button
                   type="button"
                   aria-label={`Play demo video for ${project.title}`}
-                  className="w-16 h-16 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_30px_rgba(255,42,42,0.6)] group-hover/video:scale-110 transition-all duration-300"
+                  className="w-16 h-16 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_35px_rgba(255,42,42,0.7)] group-hover/video:scale-110 transition-all duration-300 cursor-pointer"
                 >
                   <PlayIcon />
                 </button>
-                <span className="text-white text-xs font-mono font-medium uppercase tracking-widest mt-3">
-                  Click to Play Demo
+                <span className="text-white text-xs font-mono font-bold uppercase tracking-widest mt-3 drop-shadow">
+                  Play Demo Video
+                </span>
+                <span className="text-white/60 text-[10px] font-mono mt-1">
+                  Click to start video
                 </span>
               </div>
             )}
           </>
         ) : (
-          /* Placeholder / Dropzone UI */
-          <div className="p-6 text-center flex flex-col items-center justify-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-[#ff2a2a] flex items-center justify-center shadow-inner">
+          /* Placeholder UI with Background Image */
+          <div className="relative z-20 p-6 text-center flex flex-col items-center justify-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-red-500/20 backdrop-blur-md border border-red-500/40 text-[#ff2a2a] flex items-center justify-center shadow-[0_0_20px_rgba(255,42,42,0.3)]">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
                 <line x1="7" y1="2" x2="7" y2="22" />
@@ -134,11 +157,11 @@ function ProjectVideoPlayer({ project }) {
               </svg>
             </div>
             <div>
-              <p className="text-white text-sm font-semibold tracking-wide">
+              <p className="text-white text-sm font-bold tracking-wide drop-shadow">
                 Demo Video Slot Ready
               </p>
-              <p className="text-white/40 text-xs font-mono mt-1">
-                Drop <span className="text-[#ff2a2a] font-semibold">{fileName}</span> into <span className="text-white/60">public/videos/</span>
+              <p className="text-white/60 text-xs font-mono mt-1 drop-shadow">
+                Place <span className="text-[#ff2a2a] font-semibold">{fileName}</span> in <span className="text-white/80">public/videos/</span>
               </p>
             </div>
             {project.links?.demo && (
@@ -146,7 +169,7 @@ function ProjectVideoPlayer({ project }) {
                 href={project.links.demo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 text-xs font-mono text-white/70 hover:text-white underline underline-offset-4"
+                className="mt-2 text-xs font-mono text-white/80 hover:text-white underline underline-offset-4 drop-shadow transition-colors"
               >
                 Or preview live web app &rarr;
               </a>
