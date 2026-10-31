@@ -184,6 +184,7 @@ export const projects = [
     description:
       "Developed a smart parking management application featuring secure user authentication, real-time parking slot management, and an administrative dashboard.",
     techTags: ["Java", "Spring Boot", "Servlets", "JSP", "React.js", "JDBC", "MySQL"],
+    videoUrl: "/videos/smart-parking-demo.mp4",
     links: {
       github: "https://github.com/Ramesh2200",
       demo: "https://smart-parking-system-murex.vercel.app/",
@@ -198,6 +199,7 @@ export const projects = [
     description:
       "Developed an e-commerce platform with comprehensive product listings, category filtering, cart management, checkout, payment gateway integration, and email OTP verification.",
     techTags: ["Java", "Servlets", "JSP", "MySQL", "HTML5", "CSS3", "JavaScript"],
+    videoUrl: "/videos/ecommerce-demo.mp4",
     links: {
       github: "https://github.com/Ramesh2200",
       demo: "https://ecommerce-gmail-auth.vercel.app/",
@@ -212,6 +214,7 @@ export const projects = [
     description:
       "Developed a responsive food ordering application that enables users to browse food menus, manage cart selections, and place orders with seamless user flow.",
     techTags: ["Java", "Spring Boot", "React.js", "MySQL"],
+    videoUrl: "/videos/food-delivery-demo.mp4",
     links: {
       github: "https://github.com/Ramesh2200",
       demo: "https://feastflow-food-delivery.vercel.app/",

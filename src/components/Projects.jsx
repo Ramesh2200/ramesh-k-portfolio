@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import { projects, socialLinks } from '../data/portfolioData'
 
 function GitHubIcon() {
@@ -29,6 +30,134 @@ function ExternalLinkIcon() {
   )
 }
 
+function PlayIcon() {
+  return (
+    <svg className="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24" aria-hidden="true">
+      <polygon points="5 3 19 12 5 21 5 3" />
+    </svg>
+  )
+}
+
+function ProjectVideoPlayer({ project }) {
+  const videoRef = useRef(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [hasError, setHasError] = useState(false)
+
+  const fileName = project.videoUrl ? project.videoUrl.replace('/videos/', '') : 'demo.mp4'
+
+  const handleTogglePlay = () => {
+    if (!videoRef.current) return
+
+    if (isPlaying) {
+      videoRef.current.pause()
+      setIsPlaying(false)
+    } else {
+      videoRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true)
+          setHasError(false)
+        })
+        .catch(() => {
+          setHasError(true)
+          setIsPlaying(false)
+        })
+    }
+  }
+
+  return (
+    <div className="w-full rounded-2xl overflow-hidden bg-black/60 border border-white/10 shadow-2xl flex flex-col group/video">
+      {/* Mock Browser Header */}
+      <div className="px-4 py-2.5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+        </div>
+        <div className="text-[11px] font-mono text-white/40 truncate max-w-[200px] flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span>{fileName}</span>
+        </div>
+        <span className="text-[10px] font-mono uppercase tracking-wider text-white/50 px-2 py-0.5 rounded bg-white/5 border border-white/10">
+          Demo Video
+        </span>
+      </div>
+
+      {/* Video Viewport */}
+      <div className="relative aspect-video w-full bg-gradient-to-br from-black via-zinc-950 to-neutral-900 flex items-center justify-center overflow-hidden">
+        {project.videoUrl && !hasError ? (
+          <>
+            <video
+              ref={videoRef}
+              src={project.videoUrl}
+              className="w-full h-full object-cover"
+              playsInline
+              controls={isPlaying}
+              onError={() => setHasError(true)}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => setIsPlaying(false)}
+            />
+
+            {/* Play Button Overlay (shown when paused) */}
+            {!isPlaying && (
+              <div
+                onClick={handleTogglePlay}
+                className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer group-hover/video:bg-black/40 transition-all duration-300"
+              >
+                <button
+                  type="button"
+                  aria-label={`Play demo video for ${project.title}`}
+                  className="w-16 h-16 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_30px_rgba(255,42,42,0.6)] group-hover/video:scale-110 transition-all duration-300"
+                >
+                  <PlayIcon />
+                </button>
+                <span className="text-white text-xs font-mono font-medium uppercase tracking-widest mt-3">
+                  Click to Play Demo
+                </span>
+              </div>
+            )}
+          </>
+        ) : (
+          /* Placeholder / Dropzone UI */
+          <div className="p-6 text-center flex flex-col items-center justify-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-[#ff2a2a] flex items-center justify-center shadow-inner">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+                <line x1="7" y1="2" x2="7" y2="22" />
+                <line x1="17" y1="2" x2="17" y2="22" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <line x1="2" y1="7" x2="7" y2="7" />
+                <line x1="2" y1="17" x2="7" y2="17" />
+                <line x1="17" y1="17" x2="22" y2="17" />
+                <line x1="17" y1="7" x2="22" y2="7" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-white text-sm font-semibold tracking-wide">
+                Demo Video Slot Ready
+              </p>
+              <p className="text-white/40 text-xs font-mono mt-1">
+                Drop <span className="text-[#ff2a2a] font-semibold">{fileName}</span> into <span className="text-white/60">public/videos/</span>
+              </p>
+            </div>
+            {project.links?.demo && (
+              <a
+                href={project.links.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 text-xs font-mono text-white/70 hover:text-white underline underline-offset-4"
+              >
+                Or preview live web app &rarr;
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ProjectCard({ project, aosDelay }) {
   const isFlagship = project.isFlagship
 
@@ -36,78 +165,84 @@ function ProjectCard({ project, aosDelay }) {
     <div
       data-aos="fade-up"
       data-aos-delay={aosDelay}
-      className={`p-[1px] rounded-2xl transition-all duration-300 ${
+      className={`p-[1px] rounded-3xl transition-all duration-300 ${
         isFlagship
-          ? 'bg-gradient-to-r from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500/80 hover:via-white/20 hover:to-red-500/50'
+          ? 'bg-gradient-to-r from-red-500/50 via-white/10 to-red-500/30 hover:from-red-500/80 hover:via-white/20 hover:to-red-500/50 shadow-[0_0_40px_rgba(255,42,42,0.15)]'
           : 'bg-white/10 hover:bg-white/20'
       }`}
     >
-      <div className="rounded-2xl p-6 md:p-8 backdrop-blur-md bg-[#0f0f0f]/90 h-full flex flex-col justify-between">
-        <div>
-          {/* Optional Badge Pill */}
-          {project.badge && (
-            <span className="inline-block px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[#ff2a2a] uppercase tracking-widest text-xs font-mono font-semibold mb-3">
-              {project.badge}
-            </span>
-          )}
+      <div className="rounded-3xl p-6 md:p-8 backdrop-blur-md bg-[#0f0f0f]/95 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: Project Details */}
+          <div className="lg:col-span-6 flex flex-col justify-between h-full">
+            <div>
+              {/* Optional Badge Pill */}
+              {project.badge && (
+                <span className="inline-block px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[#ff2a2a] uppercase tracking-widest text-xs font-mono font-semibold mb-3">
+                  {project.badge}
+                </span>
+              )}
 
-          {/* Number & Title */}
-          <div className="flex items-baseline gap-4 mb-3">
-            <span className="text-5xl font-black text-white/10 font-serif italic select-none">
-              {project.number}
-            </span>
-            <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-              {project.title}
-            </h3>
+              {/* Number & Title */}
+              <div className="flex items-baseline gap-4 mb-3">
+                <span className="text-4xl md:text-5xl font-black text-white/15 font-serif italic select-none">
+                  {project.number}
+                </span>
+                <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-snug">
+                  {project.title}
+                </h3>
+              </div>
+
+              {/* Description */}
+              <p className="text-white/60 text-sm md:text-base leading-relaxed mb-6">
+                {project.description}
+              </p>
+
+              {/* Tech Tag Pills */}
+              <div className="flex flex-wrap gap-2 mb-8">
+                {project.techTags.map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1.5 rounded-full text-xs font-bold bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-red-600/30 transition-colors"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
+              {project.links?.demo && project.links.demo.trim() !== '' ? (
+                <a
+                  href={project.links.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ff2a2a] text-white text-sm font-bold hover:bg-[#e02020] hover:shadow-[0_0_20px_rgba(255,42,42,0.4)] transition-all duration-200"
+                >
+                  <ExternalLinkIcon />
+                  <span>Live Demo</span>
+                </a>
+              ) : null}
+
+              {project.links?.github && (
+                <a
+                  href={project.links.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/15 text-white text-sm font-semibold hover:bg-white/15 transition-all duration-200"
+                >
+                  <GitHubIcon />
+                  <span>GitHub</span>
+                </a>
+              )}
+            </div>
           </div>
 
-          {/* Description */}
-          <p className="text-white/60 text-base leading-relaxed mb-6">
-            {project.description}
-          </p>
-
-          {/* Tech Tag Pills */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {project.techTags.map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1.5 rounded-full text-xs font-bold bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-red-600/30 transition-colors"
-              >
-                {tech}
-              </span>
-            ))}
+          {/* Right Column: Project Demo Video Player */}
+          <div className="lg:col-span-6">
+            <ProjectVideoPlayer project={project} />
           </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-white/5">
-          {project.links?.github && (
-            <a
-              href={project.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/15 text-white text-sm font-semibold hover:bg-white/15 transition-all duration-200"
-            >
-              <GitHubIcon />
-              <span>GitHub</span>
-            </a>
-          )}
-
-          {project.links?.demo && project.links.demo.trim() !== '' ? (
-            <a
-              href={project.links.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ff2a2a] text-white text-sm font-bold hover:bg-[#e02020] hover:shadow-[0_0_20px_rgba(255,42,42,0.4)] transition-all duration-200"
-            >
-              <ExternalLinkIcon />
-              <span>Live Demo</span>
-            </a>
-          ) : (
-            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-white/30 text-sm font-semibold cursor-not-allowed select-none">
-              Demo Coming Soon
-            </span>
-          )}
         </div>
       </div>
     </div>
