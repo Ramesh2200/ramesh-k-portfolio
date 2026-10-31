@@ -82,7 +82,7 @@ export default function About() {
                   {/* Card Photo */}
                   <img
                     src={stackImage}
-                    alt={`${personalInfo?.name || 'RAMESH K'} - Illustrated Portrait`}
+                    alt="RAMESH K — Java Full Stack Developer, TAP Academy student"
                     className="w-full aspect-[3/4] rounded-xl object-cover object-top shadow-inner"
                   />
                   <p className="text-[10px] text-white/50 text-center mt-2 font-mono uppercase tracking-wider select-none">
