@@ -8,6 +8,7 @@ import { heroContent, socialLinks, personalInfo } from '../data/portfolioData'
 export default function Hero() {
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true, easing: 'ease-out' })
@@ -28,9 +29,27 @@ export default function Hero() {
       videoRef.current.pause()
       setIsPlaying(false)
     } else {
-      videoRef.current.play()
+      videoRef.current.muted = isMuted
+      videoRef.current.volume = 1.0
+      const playPromise = videoRef.current.play()
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Playback error with sound, falling back:', err)
+          videoRef.current.muted = true
+          setIsMuted(true)
+          videoRef.current.play().catch(() => {})
+        })
+      }
       setIsPlaying(true)
     }
+  }
+
+  const toggleMute = (e) => {
+    e.stopPropagation()
+    if (!videoRef.current) return
+    const nextMuted = !isMuted
+    videoRef.current.muted = nextMuted
+    setIsMuted(nextMuted)
   }
 
   const renderSocialIcon = (platform, url, pathD, isCustomBox = false, viewBox = '0 0 24 24') => {
@@ -79,7 +98,6 @@ export default function Hero() {
           isPlaying ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         playsInline
-        muted
         loop
         poster={heroPhoto}
         onEnded={() => setIsPlaying(false)}
@@ -192,41 +210,64 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Block: Play Reel Control */}
+        {/* Right Block: Play Reel Control & Audio Toggle */}
         <div
-          className="mt-8 md:mt-0 flex flex-col items-center"
+          className="mt-8 md:mt-0 flex flex-col items-center gap-2"
           data-aos="zoom-in"
           data-aos-delay="600"
         >
-          <button
-            type="button"
-            onClick={toggleVideo}
-            className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur hover:scale-110 hover:bg-[#ff2a2a] hover:shadow-[0_0_25px_#ff2a2a] transition-all duration-300 flex items-center justify-center cursor-pointer group"
-            aria-label={isPlaying ? 'Pause Reel' : 'Play Reel'}
-          >
-            {isPlaying ? (
-              // Pause Icon
-              <svg
-                className="w-5 h-5 md:w-8 md:h-8 fill-white"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleVideo}
+              className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur hover:scale-110 hover:bg-[#ff2a2a] hover:shadow-[0_0_25px_#ff2a2a] transition-all duration-300 flex items-center justify-center cursor-pointer group"
+              aria-label={isPlaying ? 'Pause Reel' : 'Play Reel with Voice'}
+              title={isPlaying ? 'Pause Reel' : 'Play Reel with Voice'}
+            >
+              {isPlaying ? (
+                // Pause Icon
+                <svg
+                  className="w-5 h-5 md:w-8 md:h-8 fill-white"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <rect x="6" y="4" width="4" height="16" />
+                  <rect x="14" y="4" width="4" height="16" />
+                </svg>
+              ) : (
+                // Play Icon
+                <svg
+                  className="w-5 h-5 md:w-8 md:h-8 fill-white ml-0.5 md:ml-1"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+              )}
+            </button>
+
+            {isPlaying && (
+              <button
+                type="button"
+                onClick={toggleMute}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/30 bg-black/40 backdrop-blur hover:scale-110 hover:bg-white/20 transition-all duration-300 flex items-center justify-center cursor-pointer text-white"
+                aria-label={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+                title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
               >
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
-              </svg>
-            ) : (
-              // Play Icon
-              <svg
-                className="w-5 h-5 md:w-8 md:h-8 fill-white ml-0.5 md:ml-1"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg>
+                {isMuted ? (
+                  <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                  </svg>
+                )}
+              </button>
             )}
-          </button>
-          <span className="text-white/80 text-[10px] md:text-xs uppercase tracking-widest mt-2 font-mono font-medium">
-            {isPlaying ? 'Pause' : 'Play Reel'}
+          </div>
+          <span className="text-white/80 text-[10px] md:text-xs uppercase tracking-widest mt-1 font-mono font-medium">
+            {isPlaying ? (isMuted ? 'Muted' : 'Voice On') : 'Play Reel'}
           </span>
         </div>
       </div>
