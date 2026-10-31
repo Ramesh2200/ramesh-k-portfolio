@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import stackImage from '../assets/about/profile.png'
 import { aboutContent, personalInfo } from '../data/portfolioData'
 
 export default function About() {
+  const [isFlipped, setIsFlipped] = useState(false)
+
   return (
     <section
       id="about"
@@ -51,17 +54,84 @@ export default function About() {
             {/* Grey Clip Rectangle */}
             <div className="w-8 h-4 bg-gray-400 rounded-sm mx-auto -mb-2 relative z-20 shadow-md" />
 
-            {/* Dark Card */}
-            <div className="bg-gray-900 max-w-[280px] rounded-2xl p-3 shadow-2xl -rotate-3 hover:rotate-0 transition-transform duration-500 relative z-10">
-              {/* Card Cutout Slot */}
-              <div className="w-10 h-1.5 bg-gray-800 rounded-full mx-auto mb-3" />
+            {/* Flippable 3D Card Container */}
+            <div
+              className="max-w-[280px] w-[280px] -rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer relative z-10"
+              style={{ perspective: 1000 }}
+              onClick={() => setIsFlipped(!isFlipped)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setIsFlipped(!isFlipped)
+                }
+              }}
+              aria-label="Click to flip ID badge between photo and visiting card"
+            >
+              <div
+                className="relative w-full transition-transform duration-700 [transform-style:preserve-3d]"
+                style={{
+                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                }}
+              >
+                {/* Front Side: ID Photo Badge */}
+                <div className="bg-gray-900 rounded-2xl p-3 shadow-2xl [backface-visibility:hidden]">
+                  {/* Card Cutout Slot */}
+                  <div className="w-10 h-1.5 bg-gray-800 rounded-full mx-auto mb-3" />
 
-              {/* Card Photo */}
-              <img
-                src={stackImage}
-                alt={personalInfo?.name || 'Portrait'}
-                className="w-full aspect-[3/4] rounded-xl object-cover object-top shadow-inner"
-              />
+                  {/* Card Photo */}
+                  <img
+                    src={stackImage}
+                    alt={`${personalInfo?.name || 'RAMESH K'} - Illustrated Portrait`}
+                    className="w-full aspect-[3/4] rounded-xl object-cover object-top shadow-inner"
+                  />
+                  <p className="text-[10px] text-white/50 text-center mt-2 font-mono uppercase tracking-wider select-none">
+                    Click to flip ↻
+                  </p>
+                </div>
+
+                {/* Back Side: Visiting Card */}
+                <div className="absolute inset-0 bg-gray-900 border border-white/20 rounded-2xl p-5 shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col justify-between text-white select-none">
+                  <div>
+                    {/* Top Cutout Slot & Monogram */}
+                    <div className="w-10 h-1.5 bg-gray-800 rounded-full mx-auto mb-4" />
+                    <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                      <span className="text-xs font-mono uppercase tracking-widest text-red-400">
+                        Visiting Card
+                      </span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#ff2a2a] animate-ping" />
+                    </div>
+
+                    <h3 className="text-xl font-black tracking-tight text-white">
+                      {personalInfo.name}
+                    </h3>
+                    <p className="text-xs font-mono text-red-400 uppercase tracking-wide mt-0.5">
+                      {personalInfo.title}
+                    </p>
+
+                    <div className="mt-4 space-y-2 text-xs text-white/80 font-mono">
+                      <p className="flex items-center gap-1.5">
+                        <span className="text-white/40">Loc:</span> {personalInfo.location}
+                      </p>
+                      <p className="flex items-center gap-1.5 truncate">
+                        <span className="text-white/40">Mail:</span> {personalInfo.emails.primary}
+                      </p>
+                      <p className="flex items-center gap-1.5">
+                        <span className="text-white/40">Tel:</span> {personalInfo.phone}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10">
+                    <span className="inline-block px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[#ff2a2a] text-[10px] font-mono uppercase tracking-wider mb-2">
+                      TAP Academy Trainee
+                    </span>
+                    <p className="text-[10px] text-white/50 text-center font-mono uppercase tracking-wider">
+                      Click to flip back ↺
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
