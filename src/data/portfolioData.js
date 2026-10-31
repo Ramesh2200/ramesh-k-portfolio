@@ -28,7 +28,7 @@ export const academy = {
 export const socialLinks = {
   github: "https://github.com/Ramesh2200",
   linkedin: "https://www.linkedin.com/in/ramesh-k-71243026a/",
-  instagram: "",
+  instagram: "https://www.instagram.com/_ramesh._._k__?obrf=MTh3anJ5d2U2MWY3dw%3D%3D&utm_source=qr",
 };
 
 export const heroContent = {

@@ -60,7 +60,8 @@ export default function Hero() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={platform}
-        className="text-white/60 hover:text-white hover:scale-125 transition-all duration-200 inline-block"
+        title={platform}
+        className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 hover:border-[#ff2a2a] hover:bg-[#ff2a2a] hover:shadow-[0_0_20px_#ff2a2a] text-white/90 hover:text-white hover:scale-110 transition-all duration-300 flex items-center justify-center cursor-pointer"
       >
         <svg className="w-5 h-5 fill-current" viewBox={viewBox} aria-hidden="true">
           {isCustomBox ? (
@@ -120,7 +121,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
 
       {/* Left Floating Social Bar (Desktop) */}
-      <div className="hidden lg:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 mix-blend-difference flex-col space-y-4">
+      <div className="hidden xl:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col space-y-4">
         {renderSocialIcon('GitHub', socialLinks.github, githubPath, true)}
         {renderSocialIcon('LinkedIn', socialLinks.linkedin, linkedinPath)}
         {renderSocialIcon('Instagram', socialLinks.instagram, instagramPath)}
@@ -130,9 +131,9 @@ export default function Hero() {
       <div className="absolute inset-0 z-20 max-w-7xl mx-auto px-6 md:px-12 pb-20 md:pb-[8%] flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end">
         {/* Left Block */}
         <div className="max-w-2xl">
-          {/* Small Screens Social Icons */}
+          {/* Social Icons Bar (GitHub, LinkedIn, Instagram) */}
           <div
-            className="lg:hidden flex items-center space-x-4 mb-4"
+            className="flex items-center space-x-3 mb-5"
             data-aos="fade-up"
             data-aos-delay="100"
           >
