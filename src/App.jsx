@@ -7,6 +7,7 @@ import Services from './components/Services'
 import Projects from './components/Projects'
 import Leadership from './components/Leadership'
 import SoftSkills from './components/SoftSkills'
+import Contact from './components/Contact'
 import Footer from './components/Footer'
 import { leadershipList } from './data/portfolioData'
 
@@ -22,6 +23,7 @@ function App() {
       <Projects />
       {leadershipList && leadershipList.length > 0 && <Leadership />}
       <SoftSkills />
+      <Contact />
       <Footer />
     </>
   )
