@@ -1,6 +1,19 @@
 import { useRef, useState } from 'react'
 import { projects, socialLinks } from '../data/portfolioData'
-import projectDemoBg from '../assets/projects/project-demo-bg.jpg'
+import smartParkingBg from '../assets/projects/smart-parking-demo-bg.jpg'
+import ecommerceBg from '../assets/projects/ecommerce-demo-bg.jpg'
+import foodDeliveryBg from '../assets/projects/food-delivery-demo-bg.jpg'
+import defaultProjectBg from '../assets/projects/project-demo-bg.jpg'
+
+// Mapping project IDs or banner keys to their respective showcase background images
+const bannerMap = {
+  'smart-parking': smartParkingBg,
+  'smart-parking-system': smartParkingBg,
+  ecommerce: ecommerceBg,
+  'ecommerce-smartway': ecommerceBg,
+  'food-delivery': foodDeliveryBg,
+  'food-order-delivery': foodDeliveryBg,
+}
 
 function GitHubIcon() {
   return (
@@ -39,14 +52,44 @@ function PlayIcon() {
   )
 }
 
+function getYouTubeId(url) {
+  if (!url) return null
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/i
+  )
+  return match ? match[1] : null
+}
+
 function ProjectVideoPlayer({ project }) {
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  const fileName = project.videoUrl ? project.videoUrl.replace('/videos/', '') : 'demo.mp4'
+  const youtubeId = getYouTubeId(project.videoUrl)
+  const isYouTube = Boolean(youtubeId)
+
+  // Attractive app slug for the mock browser address bar
+  const appSlug = project.id ? `${project.id}.app` : 'preview.app'
+
+  const previewImage =
+    bannerMap[project.bannerImage] ||
+    bannerMap[project.id] ||
+    defaultProjectBg
 
   const handleTogglePlay = () => {
+    if (isYouTube) {
+      setIsPlaying(true)
+      return
+    }
+
+    if (hasError || !project.videoUrl) {
+      // If video file is not available, open the live project demo in a new tab
+      if (project.links?.demo) {
+        window.open(project.links.demo, '_blank', 'noopener,noreferrer')
+      }
+      return
+    }
+
     if (!videoRef.current) return
 
     if (isPlaying) {
@@ -66,6 +109,8 @@ function ProjectVideoPlayer({ project }) {
     }
   }
 
+  const isVideoAvailable = isYouTube || (Boolean(project.videoUrl) && !hasError)
+
   return (
     <div className="w-full rounded-2xl overflow-hidden bg-black/60 border border-white/10 shadow-2xl flex flex-col group/video">
       {/* Mock Browser Header */}
@@ -75,12 +120,12 @@ function ProjectVideoPlayer({ project }) {
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
           <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
         </div>
-        <div className="text-[11px] font-mono text-white/40 truncate max-w-[200px] flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span>{fileName}</span>
+        <div className="text-[11px] font-mono text-white/50 truncate max-w-[220px] flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="tracking-wide">{appSlug}</span>
         </div>
-        <span className="text-[10px] font-mono uppercase tracking-wider text-white/50 px-2 py-0.5 rounded bg-white/5 border border-white/10">
-          Demo Video
+        <span className="text-[10px] font-mono uppercase tracking-wider text-[#ff2a2a] px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 font-semibold">
+          {isYouTube ? 'Video Showcase' : isVideoAvailable ? 'HD Video Demo' : 'Live Showcase'}
         </span>
       </div>
 
@@ -88,92 +133,75 @@ function ProjectVideoPlayer({ project }) {
       <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
         {/* Background Showcase Image */}
         <img
-          src={projectDemoBg}
-          alt={`${project.title} Demo Preview`}
+          src={previewImage}
+          alt={`${project.title} Showcase`}
+          onError={(e) => {
+            e.currentTarget.src = defaultProjectBg
+          }}
           className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
-            isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-65 group-hover/video:opacity-85 group-hover/video:scale-105'
+            isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-90 group-hover/video:opacity-100 group-hover/video:scale-105'
           }`}
         />
 
         {/* Cinematic Gradient Overlay */}
         <div
-          className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/60 pointer-events-none transition-opacity duration-500 ${
+          className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/30 pointer-events-none transition-opacity duration-500 ${
             isPlaying ? 'opacity-0' : 'opacity-100'
           }`}
         />
 
-        {project.videoUrl && !hasError ? (
-          <>
-            <video
-              ref={videoRef}
-              src={project.videoUrl}
-              poster={projectDemoBg}
-              className={`w-full h-full object-cover relative z-10 transition-opacity duration-300 ${
-                isPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
-              }`}
-              playsInline
-              controls={isPlaying}
-              onError={() => setHasError(true)}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onEnded={() => setIsPlaying(false)}
-            />
+        {/* Embedded YouTube Player (muted to remove voice audio) */}
+        {isYouTube && isPlaying && (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&rel=0`}
+            title={`${project.title} Demo Video`}
+            className="w-full h-full border-0 relative z-10"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        )}
 
-            {/* Play Button Overlay (shown when paused) */}
-            {!isPlaying && (
-              <div
-                onClick={handleTogglePlay}
-                className="absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer group-hover/video:bg-black/30 transition-all duration-300"
-              >
-                <button
-                  type="button"
-                  aria-label={`Play demo video for ${project.title}`}
-                  className="w-16 h-16 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_35px_rgba(255,42,42,0.7)] group-hover/video:scale-110 transition-all duration-300 cursor-pointer"
-                >
-                  <PlayIcon />
-                </button>
-                <span className="text-white text-xs font-mono font-bold uppercase tracking-widest mt-3 drop-shadow">
-                  Play Demo Video
-                </span>
-                <span className="text-white/60 text-[10px] font-mono mt-1">
-                  Click to start video
-                </span>
-              </div>
-            )}
-          </>
-        ) : (
-          /* Placeholder UI with Background Image */
-          <div className="relative z-20 p-6 text-center flex flex-col items-center justify-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-red-500/20 backdrop-blur-md border border-red-500/40 text-[#ff2a2a] flex items-center justify-center shadow-[0_0_20px_rgba(255,42,42,0.3)]">
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
-                <line x1="7" y1="2" x2="7" y2="22" />
-                <line x1="17" y1="2" x2="17" y2="22" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <line x1="2" y1="7" x2="7" y2="7" />
-                <line x1="2" y1="17" x2="7" y2="17" />
-                <line x1="17" y1="17" x2="22" y2="17" />
-                <line x1="17" y1="7" x2="22" y2="7" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-white text-sm font-bold tracking-wide drop-shadow">
-                Demo Video Slot Ready
-              </p>
-              <p className="text-white/60 text-xs font-mono mt-1 drop-shadow">
-                Place <span className="text-[#ff2a2a] font-semibold">{fileName}</span> in <span className="text-white/80">public/videos/</span>
-              </p>
-            </div>
-            {project.links?.demo && (
-              <a
-                href={project.links.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 text-xs font-mono text-white/80 hover:text-white underline underline-offset-4 drop-shadow transition-colors"
-              >
-                Or preview live web app &rarr;
-              </a>
-            )}
+        {/* HTML5 Native Video Player */}
+        {!isYouTube && project.videoUrl && !hasError && (
+          <video
+            ref={videoRef}
+            src={project.videoUrl}
+            poster={previewImage}
+            className={`w-full h-full object-cover relative z-10 transition-opacity duration-300 ${
+              isPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+            playsInline
+            controls={isPlaying}
+            onError={() => setHasError(true)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => setIsPlaying(false)}
+          />
+        )}
+
+        {/* Attractive Interactive Overlay Button */}
+        {!isPlaying && (
+          <div
+            onClick={handleTogglePlay}
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer group-hover/video:bg-black/25 transition-all duration-300"
+          >
+            <button
+              type="button"
+              aria-label={`Open demo for ${project.title}`}
+              className="w-16 h-16 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_35px_rgba(255,42,42,0.7)] group-hover/video:scale-110 group-hover/video:shadow-[0_0_50px_rgba(255,42,42,0.9)] transition-all duration-300 cursor-pointer"
+            >
+              {isVideoAvailable ? <PlayIcon /> : <ExternalLinkIcon />}
+            </button>
+            <span className="text-white text-xs font-mono font-bold uppercase tracking-widest mt-3 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              {isVideoAvailable ? 'Watch Demo Video' : 'Explore Live Project'}
+            </span>
+            <span className="text-white/80 text-[10px] font-mono mt-1 drop-shadow tracking-wide">
+              {isVideoAvailable
+                ? isYouTube
+                  ? 'Click to start video (muted)'
+                  : 'Click to start video'
+                : 'Click to launch live app &rarr;'}
+            </span>
           </div>
         )}
       </div>
@@ -243,8 +271,8 @@ function ProjectCard({ project, aosDelay }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ff2a2a] text-white text-sm font-bold hover:bg-[#e02020] hover:shadow-[0_0_20px_rgba(255,42,42,0.4)] transition-all duration-200"
                 >
-                  <ExternalLinkIcon />
-                  <span>Live Demo</span>
+                  {getYouTubeId(project.links.demo) ? <PlayIcon /> : <ExternalLinkIcon />}
+                  <span>{getYouTubeId(project.links.demo) ? 'Watch Demo' : 'Live Demo'}</span>
                 </a>
               ) : null}
 

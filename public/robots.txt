@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-chi-gules-7jsgenmgru.vercel.app/sitemap.xml
+Sitemap: https://rameshwork.online/sitemap.xml
