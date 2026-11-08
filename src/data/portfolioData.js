@@ -187,7 +187,7 @@ export const projects = [
     videoUrl: "/videos/smart-parking-demo.mp4",
     bannerImage: "smart-parking",
     links: {
-      github: "https://github.com/Ramesh2200",
+      github: "https://github.com/Ramesh2200/smart-parking-system",
       demo: "https://smart-parking-system-murex.vercel.app/",
     },
     isFlagship: true,
@@ -203,7 +203,7 @@ export const projects = [
     videoUrl: "https://youtu.be/iNZVWkgSFf4?si=BRGdR4pZSHsw8Hhk",
     bannerImage: "ecommerce",
     links: {
-      github: "https://github.com/Ramesh2200",
+      github: "https://github.com/Ramesh2200/SmartWay-ECommerce",
       demo: "https://youtu.be/iNZVWkgSFf4?si=BRGdR4pZSHsw8Hhk",
     },
     isFlagship: false,
@@ -219,7 +219,7 @@ export const projects = [
     videoUrl: "/videos/food-delivery-demo.mp4",
     bannerImage: "food-delivery",
     links: {
-      github: "https://github.com/Ramesh2200",
+      github: "https://github.com/Ramesh2200/Food_order_delivery_app",
       demo: "https://foodwala-delivery.vercel.app/",
     },
     isFlagship: false,
